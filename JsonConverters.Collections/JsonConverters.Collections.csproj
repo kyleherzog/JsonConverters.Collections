@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationVersion>0.1.0</ApplicationVersion>
     <ApplicationRevision>0</ApplicationRevision>
     <Version>0.1.0</Version>
