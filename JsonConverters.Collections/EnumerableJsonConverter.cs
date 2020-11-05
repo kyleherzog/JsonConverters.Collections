@@ -1,33 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using JsonConverters.Collections.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JsonConverters.Collections
 {
+    /// <summary>
+    /// Provides deserialization support of serialized arrays to any type that implements <see cref="IEnumerable{T}"/>.
+    /// </summary>
     public class EnumerableJsonConverter : JsonConverter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumerableJsonConverter"/> class.
+        /// </summary>
+        /// <param name="itemType">The <see cref="Type"/> of the objects stored in the collection.</param>
         public EnumerableJsonConverter(Type itemType)
         {
             ItemType = itemType;
         }
 
+        /// <inheritdoc/>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanWrite => false;
 
+        /// <summary>
+        /// Gets the <see cref="Type"/> of objects stored in the collections to be deserialized.
+        /// </summary>
         public Type ItemType { get; }
 
+        /// <inheritdoc/>
         public override bool CanConvert(Type objectType)
         {
-            var isIEnumerable = (objectType.IsInterface && objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                || objectType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+            var isIEnumerable = objectType.IsIEnumerable();
 
             if (isIEnumerable)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 if (ItemType == argumentType || ItemType.IsSubclassOf(argumentType))
                 {
@@ -38,14 +50,25 @@ namespace JsonConverters.Collections
             return false;
         }
 
+        /// <inheritdoc/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (serializer == null)
+            {
+                throw new ArgumentNullException(nameof(serializer));
+            }
+
+            if (objectType == null)
+            {
+                throw new ArgumentNullException(nameof(objectType));
+            }
+
             var jsonArray = JArray.Load(reader);
 
             object deserializedList;
             if (objectType.IsInterface)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 var genericBase = typeof(List<>);
                 var combinedType = genericBase.MakeGenericType(argumentType);
@@ -54,7 +77,7 @@ namespace JsonConverters.Collections
             }
             else if (objectType.IsArray)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 deserializedList = Activator.CreateInstance(objectType, jsonArray.Count);
                 for (var i = 0; i < jsonArray.Count; i++)
@@ -74,21 +97,10 @@ namespace JsonConverters.Collections
             return deserializedList;
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new InvalidOperationException($"{nameof(EnumerableJsonConverter)} only supports reading JSON.");
-        }
-
-        private Type GetArgumentType(Type objectType)
-        {
-            if (objectType.IsGenericType)
-            {
-                return objectType.GetGenericArguments().First();
-            }
-            else
-            {
-                return objectType.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)).GetGenericArguments().First();
-            }
         }
     }
 }
