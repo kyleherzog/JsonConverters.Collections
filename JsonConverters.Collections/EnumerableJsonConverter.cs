@@ -7,19 +7,32 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonConverters.Collections
 {
+    /// <summary>
+    /// Provides deserialization support of serialized arrays to any type that implements <see cref="IEnumerable{T}"/>.
+    /// </summary>
     public class EnumerableJsonConverter : JsonConverter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumerableJsonConverter"/> class.
+        /// </summary>
+        /// <param name="itemType">The <see cref="Type"/> of the objects stored in the collection.</param>
         public EnumerableJsonConverter(Type itemType)
         {
             ItemType = itemType;
         }
 
+        /// <inheritdoc/>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanWrite => false;
 
+        /// <summary>
+        /// Gets the <see cref="Type"/> of objects stored in the collections to be deserialized.
+        /// </summary>
         public Type ItemType { get; }
 
+        /// <inheritdoc/>
         public override bool CanConvert(Type objectType)
         {
             var isIEnumerable = objectType.IsIEnumerable();
@@ -37,8 +50,19 @@ namespace JsonConverters.Collections
             return false;
         }
 
+        /// <inheritdoc/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (serializer == null)
+            {
+                throw new ArgumentNullException(nameof(serializer));
+            }
+
+            if (objectType == null)
+            {
+                throw new ArgumentNullException(nameof(objectType));
+            }
+
             var jsonArray = JArray.Load(reader);
 
             object deserializedList;
@@ -73,6 +97,7 @@ namespace JsonConverters.Collections
             return deserializedList;
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new InvalidOperationException($"{nameof(EnumerableJsonConverter)} only supports reading JSON.");

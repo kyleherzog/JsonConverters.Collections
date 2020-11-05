@@ -7,17 +7,25 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonConverters.Collections
 {
+    /// <summary>
+    /// Provides serialization support for collections that are serialized as an array when there are multiple
+    /// values, but when there is only one value only the value itself is serialized.
+    /// </summary>
+    /// <typeparam name="T">The type of values stored in the collection.</typeparam>
     public class SingleOrArrayJsonConverter<T> : JsonConverter
     {
         /// <summary>
-        /// Use a privately create serializer so we don't re-enter into CanConvert and cause a Newtonsoft exception
+        /// Use a privately create serializer so we don't re-enter into CanConvert and cause a Newtonsoft exception.
         /// </summary>
         private readonly JsonSerializer unregisteredConvertersSerializer = new JsonSerializer();
 
+        /// <inheritdoc/>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanWrite => true;
 
+        /// <inheritdoc/>
         public override bool CanConvert(Type objectType)
         {
             var isIEnumerable = objectType.IsIEnumerable();
@@ -35,6 +43,7 @@ namespace JsonConverters.Collections
             return false;
         }
 
+        /// <inheritdoc/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var token = JToken.Load(reader);
@@ -49,6 +58,7 @@ namespace JsonConverters.Collections
             }
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var items = (IEnumerable<T>)value;

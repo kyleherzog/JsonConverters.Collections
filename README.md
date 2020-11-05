@@ -46,7 +46,7 @@ public class DemoUser
 ```
 
 ## EnumerableJsonConverter
-This converter will deserialize a serialized array to any class that implements `IEnumerable<>`. Just construct the `EnumerableJsonConverter` by passing the type of the objects in the serialized array.  Then add the converter to the converters array that is passed to `JsonConvert.DeserializeObject<>`, specifying any type that implements `IEnumerable<>` or just an `IEnumerable<>` itself, without the need for any interface name to have been serialized into the data first. 
+This converter will deserialize a serialized array to any type that implements `IEnumerable<>`. Just construct the `EnumerableJsonConverter` by passing the type of the objects in the serialized array.  Then add the converter to the converters array that is passed to `JsonConvert.DeserializeObject<>`, specifying any type that implements `IEnumerable<>` or just an `IEnumerable<>` itself, without the need for any interface name to have been serialized into the data first. 
 
 ```c#
 var serialized = "[true, false, true]";
