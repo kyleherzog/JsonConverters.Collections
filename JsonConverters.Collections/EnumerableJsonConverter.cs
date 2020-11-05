@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using JsonConverters.Collections.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,12 +22,11 @@ namespace JsonConverters.Collections
 
         public override bool CanConvert(Type objectType)
         {
-            var isIEnumerable = (objectType.IsInterface && objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                || objectType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+            var isIEnumerable = objectType.IsIEnumerable();
 
             if (isIEnumerable)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 if (ItemType == argumentType || ItemType.IsSubclassOf(argumentType))
                 {
@@ -45,7 +44,7 @@ namespace JsonConverters.Collections
             object deserializedList;
             if (objectType.IsInterface)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 var genericBase = typeof(List<>);
                 var combinedType = genericBase.MakeGenericType(argumentType);
@@ -54,7 +53,7 @@ namespace JsonConverters.Collections
             }
             else if (objectType.IsArray)
             {
-                var argumentType = GetArgumentType(objectType);
+                var argumentType = objectType.GetEnumerablArgumentType();
 
                 deserializedList = Activator.CreateInstance(objectType, jsonArray.Count);
                 for (var i = 0; i < jsonArray.Count; i++)
@@ -77,18 +76,6 @@ namespace JsonConverters.Collections
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new InvalidOperationException($"{nameof(EnumerableJsonConverter)} only supports reading JSON.");
-        }
-
-        private Type GetArgumentType(Type objectType)
-        {
-            if (objectType.IsGenericType)
-            {
-                return objectType.GetGenericArguments().First();
-            }
-            else
-            {
-                return objectType.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)).GetGenericArguments().First();
-            }
         }
     }
 }
