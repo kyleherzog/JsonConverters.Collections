@@ -43,14 +43,9 @@ namespace JsonConverters.Collections.Extensions
                 throw new ArgumentException("The type specified must implement IEnumberable<>.", nameof(type));
             }
 
-            if (type.IsGenericType)
-            {
-                return type.GetGenericArguments().First();
-            }
-            else
-            {
-                return type.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)).GetGenericArguments().First();
-            }
+            return type.IsGenericType
+                ? type.GetGenericArguments().First()
+                : type.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)).GetGenericArguments().First();
         }
     }
 }

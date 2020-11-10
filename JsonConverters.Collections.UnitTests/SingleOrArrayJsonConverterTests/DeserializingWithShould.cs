@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using JsonConverters.Collections.UnitTests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -10,6 +11,24 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
     [TestClass]
     public class DeserializingWithShould
     {
+        [TestMethod]
+        public void DeserializeInheritedListGivenClassAttributionAndSingleItems()
+        {
+            var oddList = new SingleOrList<string> { "OnlyOne" };
+            var serialized = JsonConvert.SerializeObject(oddList);
+            var deserialized = JsonConvert.DeserializeObject<SingleOrList<string>>(serialized);
+            deserialized.Should().BeEquivalentTo(oddList);
+        }
+
+        [TestMethod]
+        public void DeserializeInheritedListGivenClassAttributionAndMultipleItems()
+        {
+            var oddList = new SingleOrList<string> { "1", "3", "5" };
+            var serialized = JsonConvert.SerializeObject(oddList);
+            var deserialized = JsonConvert.DeserializeObject<SingleOrList<string>>(serialized);
+            deserialized.Should().BeEquivalentTo(oddList);
+        }
+
         [TestMethod]
         public void DeserializeBooleanArrayToArrayOfBoolean()
         {
