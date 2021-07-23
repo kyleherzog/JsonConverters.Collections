@@ -7,8 +7,9 @@
 These are the changes to each version that has been released
 on NuGet.org.
 
-## 2.2
+## 3.0
 - [x] Added untyped version of SingleOrArrayConverter
+- [x] Updated Newton.Json to v13.0.1 
 
 ## 2.1
 - [x] Fix for issues with applying converter with a JsonConverter attribute at the class level.

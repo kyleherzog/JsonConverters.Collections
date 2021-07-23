@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>8.0</LangVersion>
-    <ApplicationVersion>2.2</ApplicationVersion>
+    <LangVersion>9.0</LangVersion>
+    <ApplicationVersion>3.0</ApplicationVersion>
     <ApplicationRevision>0</ApplicationRevision>
-    <Version>2.2</Version>
+    <Version>3.0</Version>
     <Authors>Kyle Herzog</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kyleherzog/JsonConverters.Collections/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kyleherzog/JsonConverters.Collections</PackageProjectUrl>
@@ -20,7 +20,11 @@
     <CodeAnalysisRuleSet>JsonConverters.Collections.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="codecracker.CSharp" Version="1.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -33,11 +37,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Puma.Security.Rules" Version="2.4.6">
+    <PackageReference Include="Puma.Security.Rules" Version="2.4.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -45,7 +45,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.14.0.22654">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.26.0.34506">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

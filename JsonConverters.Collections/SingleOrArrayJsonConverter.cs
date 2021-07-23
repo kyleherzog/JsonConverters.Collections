@@ -34,12 +34,7 @@ namespace JsonConverters.Collections
         {
             var isIEnumerable = objectType.IsIEnumerable();
 
-            if (isIEnumerable)
-            {
-                return true;
-            }
-
-            return false;
+            return isIEnumerable;
         }
 
         /// <inheritdoc/>
