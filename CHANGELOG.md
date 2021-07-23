@@ -7,6 +7,9 @@
 These are the changes to each version that has been released
 on NuGet.org.
 
+## 2.2
+- [x] Added untyped version of SingleOrArrayConverter
+
 ## 2.1
 - [x] Fix for issues with applying converter with a JsonConverter attribute at the class level.
 

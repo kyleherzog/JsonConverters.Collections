@@ -11,7 +11,9 @@ A .NET Standard class library with JsonConverters to assist with deserializing c
 ## SingleOrArrayJsonConverter
 This converter supports deserializing `IEnumerable<>` properties that are serialized as an array when there are multiple values, but when there is only one value, just the value itself is serialized.
 
-The following example shows a property the leverages the `JsonConverterAttribute` to specify the `SingleOrArrayJsonConverter<>`.  With this specification, both serialization examples shown will successfully deserialize.
+The following example shows a property the leverages the `JsonConverterAttribute` to specify the `SingleOrArrayJsonConverter`.  With this specification, both serialization examples shown will successfully deserialize.
+
+> `SingleOrArrayJsonConverter` can also be declared with a generic type parameter.  This just adds a little extra type verification when checking if the converter can convert a given object type.
 
 **Example Class**
 ```c#
@@ -21,7 +23,7 @@ public class DemoUser
     public string Name { get; set; }
 
     [JsonProperty("aliases")]
-    [JsonConverter(typeof(SingleOrArrayJsonConverter<string>))]
+    [JsonConverter(typeof(SingleOrArrayJsonConverter))]
     public List<string> Aliases { get; set; }
 }
 ```

@@ -13,8 +13,7 @@ namespace JsonConverters.Collections
     /// Provides serialization support for collections that are serialized as an array when there are multiple
     /// values, but when there is only one value only the value itself is serialized.
     /// </summary>
-    /// <typeparam name="T">The type of values stored in the collection.</typeparam>
-    public class SingleOrArrayJsonConverter<T> : JsonConverter
+    public class SingleOrArrayJsonConverter : JsonConverter
     {
         private readonly Lazy<MethodInfo> castMethodLazy = new Lazy<MethodInfo>(() => typeof(Enumerable).GetMethod(nameof(Enumerable.Cast), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public));
 
@@ -37,12 +36,7 @@ namespace JsonConverters.Collections
 
             if (isIEnumerable)
             {
-                var argumentType = objectType.GetEnumerablArgumentType();
-
-                if (typeof(T) == argumentType || typeof(T).IsSubclassOf(argumentType))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -56,20 +50,35 @@ namespace JsonConverters.Collections
                 throw new ArgumentNullException(nameof(objectType));
             }
 
-            IList<T> results;
+            System.Collections.IList results;
+
+            var elementType = objectType;
+            if (objectType.IsArray)
+            {
+                elementType = objectType.GetElementType();
+            }
+
+            if (objectType.IsGenericType)
+            {
+                elementType = objectType.GetGenericArguments().First();
+            }
+
             if (objectType.IsArray || objectType.IsInterface)
             {
-                results = (IList<T>)new List<T>();
+                var listType = typeof(List<>);
+                var genericListType = listType.MakeGenericType(elementType);
+
+                results = (System.Collections.IList)Activator.CreateInstance(genericListType);
             }
             else
             {
-                results = (IList<T>)Activator.CreateInstance(objectType);
+                results = (System.Collections.IList)Activator.CreateInstance(objectType);
             }
 
             var token = JToken.Load(reader);
             if (token.Type == JTokenType.Array)
             {
-                var items = token.Select(x => (T)x.ToObject(typeof(T)));
+                var items = token.Select(x => x.ToObject(elementType));
 
                 foreach (var item in items)
                 {
@@ -78,13 +87,13 @@ namespace JsonConverters.Collections
             }
             else
             {
-                var value = token.ToObject<T>();
+                var value = token.ToObject(elementType);
 
                 results.Add(value);
             }
 
             var argumentType = objectType.GetEnumerablArgumentType();
-            if (argumentType != typeof(T))
+            if (argumentType != typeof(object))
             {
                 var typedResults = Cast(results, argumentType);
                 if (objectType.IsArray)
@@ -100,7 +109,9 @@ namespace JsonConverters.Collections
 
             if (objectType.IsArray)
             {
-                return results.ToArray();
+                var array = Array.CreateInstance(objectType.GetElementType(), results.Count);
+                results.CopyTo(array, 0);
+                return array;
             }
             else
             {
@@ -111,10 +122,11 @@ namespace JsonConverters.Collections
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var items = (IEnumerable<T>)value;
-            if (items.Count() == 1)
+            var items = (System.Collections.IEnumerable)value;
+            var objectItems = items.Cast<object>();
+            if (objectItems.Count() == 1)
             {
-                var token = JToken.FromObject(items.First());
+                var token = JToken.FromObject(objectItems.First());
                 token.WriteTo(writer);
             }
             else

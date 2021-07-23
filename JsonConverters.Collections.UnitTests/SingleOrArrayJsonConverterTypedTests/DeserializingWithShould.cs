@@ -6,7 +6,7 @@ using JsonConverters.Collections.UnitTests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
+namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTypedTests
 {
     [TestClass]
     public class DeserializingWithShould
@@ -14,18 +14,18 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         [TestMethod]
         public void DeserializeInheritedListGivenClassAttributionAndSingleItems()
         {
-            var oddList = new ValueOrList<string> { "OnlyOne" };
+            var oddList = new SingleOrList<string> { "OnlyOne" };
             var serialized = JsonConvert.SerializeObject(oddList);
-            var deserialized = JsonConvert.DeserializeObject<ValueOrList<string>>(serialized);
+            var deserialized = JsonConvert.DeserializeObject<SingleOrList<string>>(serialized);
             deserialized.Should().BeEquivalentTo(oddList);
         }
 
         [TestMethod]
         public void DeserializeInheritedListGivenClassAttributionAndMultipleItems()
         {
-            var oddList = new ValueOrList<string> { "1", "3", "5" };
+            var oddList = new SingleOrList<string> { "1", "3", "5" };
             var serialized = JsonConvert.SerializeObject(oddList);
-            var deserialized = JsonConvert.DeserializeObject<ValueOrList<string>>(serialized);
+            var deserialized = JsonConvert.DeserializeObject<SingleOrList<string>>(serialized);
             deserialized.Should().BeEquivalentTo(oddList);
         }
 
@@ -34,7 +34,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var booleans = new bool[] { true, false, true };
             var serialized = JsonConvert.SerializeObject(booleans);
-            var deserialized = JsonConvert.DeserializeObject<bool[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<bool[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             deserialized.Should().BeEquivalentTo(booleans);
         }
 
@@ -43,7 +43,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var booleans = new bool[] { true, false, true };
             var serialized = JsonConvert.SerializeObject(booleans);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             deserialized.Should().BeEquivalentTo(booleans);
         }
 
@@ -52,7 +52,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var booleans = new bool[] { true, false, true };
             var serialized = JsonConvert.SerializeObject(booleans);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             deserialized.Should().BeEquivalentTo(booleans);
         }
 
@@ -61,7 +61,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var booleans = new bool[] { true, false, true };
             var serialized = JsonConvert.SerializeObject(booleans);
-            var deserialized = JsonConvert.DeserializeObject<List<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             deserialized.Should().BeEquivalentTo(booleans);
         }
 
@@ -70,7 +70,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = true;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<bool[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<bool[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             Assert.AreEqual(1, deserialized.Length);
             Assert.AreEqual(value, deserialized.First());
         }
@@ -80,7 +80,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = true;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             Assert.AreEqual(1, deserialized.Count());
             Assert.AreEqual(value, deserialized.First());
         }
@@ -90,7 +90,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = true;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             Assert.AreEqual(1, deserialized.Count());
             Assert.AreEqual(value, deserialized.First());
         }
@@ -100,7 +100,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = true;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<List<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<bool>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<bool>() });
             Assert.AreEqual(1, deserialized.Count);
             Assert.AreEqual(value, deserialized.First());
         }
@@ -110,7 +110,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new int[] { 432, 789, 2 };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<int[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<int[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -119,7 +119,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new int[] { 432, 789, 2 };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -128,7 +128,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new int[] { 432, 789, 2 };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -137,7 +137,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new int[] { 432, 789, 2 };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<List<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -146,7 +146,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = 2564;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<int[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<int[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             Assert.AreEqual(1, deserialized.Length);
             Assert.AreEqual(value, deserialized.First());
         }
@@ -156,7 +156,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = 23;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             Assert.AreEqual(1, deserialized.Count());
             Assert.AreEqual(value, deserialized.First());
         }
@@ -166,7 +166,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = 42325;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             Assert.AreEqual(1, deserialized.Count());
             deserialized.First().Should().BeEquivalentTo(value); // this will actually be an Int64 so all we can compare is equivalence.
         }
@@ -176,7 +176,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = 5553;
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<List<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<int>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<int>() });
             Assert.AreEqual(1, deserialized.Count);
             Assert.AreEqual(value, deserialized.First());
         }
@@ -186,7 +186,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new string[] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<string[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<string[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -195,7 +195,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new string[] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -204,7 +204,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new string[] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -213,7 +213,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var values = new string[] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
             var serialized = JsonConvert.SerializeObject(values);
-            var deserialized = JsonConvert.DeserializeObject<List<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             deserialized.Should().BeEquivalentTo(values);
         }
 
@@ -222,7 +222,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = Guid.NewGuid().ToString();
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<string[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<string[]>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             Assert.AreEqual(1, deserialized.Length);
             Assert.AreEqual(value, deserialized.First());
         }
@@ -232,7 +232,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = Guid.NewGuid().ToString();
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<object>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             Assert.AreEqual(1, deserialized.Count());
             Assert.AreEqual(value, deserialized.First());
         }
@@ -242,7 +242,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = Guid.NewGuid().ToString();
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<IEnumerable<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<IEnumerable<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             Assert.AreEqual(1, deserialized.Count());
             Assert.AreEqual(value, deserialized.First());
         }
@@ -252,7 +252,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         {
             var value = Guid.NewGuid().ToString();
             var serialized = JsonConvert.SerializeObject(value);
-            var deserialized = JsonConvert.DeserializeObject<List<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            var deserialized = JsonConvert.DeserializeObject<List<string>>(serialized, new JsonConverter[] { new SingleOrArrayJsonConverter<string>() });
             Assert.AreEqual(1, deserialized.Count);
             Assert.AreEqual(value, deserialized.First());
         }
