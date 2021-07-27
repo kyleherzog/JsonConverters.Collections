@@ -14,6 +14,15 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         [TestMethod]
         public void DeserializeInheritedListGivenClassAttributionAndSingleItems()
         {
+            var oddList = new StringOrValueList { "OnlyOne" };
+            var serialized = JsonConvert.SerializeObject(oddList);
+            var deserialized = JsonConvert.DeserializeObject<StringOrValueList>(serialized);
+            deserialized.Should().BeEquivalentTo(oddList);
+        }
+
+        [TestMethod]
+        public void DeserializeListGivenClassAttributionAndSingleItems()
+        {
             var oddList = new ValueOrList<string> { "OnlyOne" };
             var serialized = JsonConvert.SerializeObject(oddList);
             var deserialized = JsonConvert.DeserializeObject<ValueOrList<string>>(serialized);
@@ -21,7 +30,7 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
         }
 
         [TestMethod]
-        public void DeserializeInheritedListGivenClassAttributionAndMultipleItems()
+        public void DeserializeListGivenClassAttributionAndMultipleItems()
         {
             var oddList = new ValueOrList<string> { "1", "3", "5" };
             var serialized = JsonConvert.SerializeObject(oddList);
