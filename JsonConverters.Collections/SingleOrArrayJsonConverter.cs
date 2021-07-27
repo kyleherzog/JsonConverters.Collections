@@ -47,16 +47,7 @@ namespace JsonConverters.Collections
 
             System.Collections.IList results;
 
-            var elementType = objectType;
-            if (objectType.IsArray)
-            {
-                elementType = objectType.GetElementType();
-            }
-
-            if (objectType.IsGenericType)
-            {
-                elementType = objectType.GetGenericArguments().First();
-            }
+            var elementType = objectType.GetEnumerablArgumentType();
 
             if (objectType.IsArray || objectType.IsInterface)
             {
