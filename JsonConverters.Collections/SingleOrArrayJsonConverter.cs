@@ -20,10 +20,6 @@ namespace JsonConverters.Collections
 
         private readonly ConcurrentDictionary<Type, MethodInfo> genericCastMethodCache = new ConcurrentDictionary<Type, MethodInfo>();
 
-        private readonly ConcurrentDictionary<Type, MethodInfo> genericToArrayMethodCache = new ConcurrentDictionary<Type, MethodInfo>();
-
-        private readonly Lazy<MethodInfo> toArrayMethodLazy = new Lazy<MethodInfo>(() => typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public));
-
         /// <inheritdoc/>
         public override bool CanRead => true;
 
@@ -118,20 +114,7 @@ namespace JsonConverters.Collections
             }
         }
 
-        private object Cast(object items, Type targetType)
-        {
-            var genericCastMethod = genericCastMethodCache.GetOrAdd(targetType, t =>
-            {
-                var castMethod = castMethodLazy.Value;
-                var genericCastMethod = castMethod.MakeGenericMethod(targetType);
-                return genericCastMethod;
-            });
-
-            var typedResults = genericCastMethod.Invoke(null, new[] { items });
-            return typedResults;
-        }
-
-        private object CreatePopulatedResult(Type objectType, Type elementType, IList items)
+        private static object CreatePopulatedResult(Type objectType, Type elementType, IList items)
         {
             var result = Activator.CreateInstance(objectType);
             var addMethod = AddMethodCache.GetOrAdd(objectType, x => objectType.GetMethod("Add", new Type[] { elementType }));
@@ -148,16 +131,16 @@ namespace JsonConverters.Collections
             return result;
         }
 
-        private object ToArray(object items, Type targetType)
+        private object Cast(object items, Type targetType)
         {
-            var genericToArrayMethod = genericToArrayMethodCache.GetOrAdd(targetType, t =>
+            var genericCastMethod = genericCastMethodCache.GetOrAdd(targetType, t =>
             {
-                var toArrayMethod = toArrayMethodLazy.Value;
-                var genericToArrayMethod = toArrayMethod.MakeGenericMethod(targetType);
-                return genericToArrayMethod;
+                var castMethod = castMethodLazy.Value;
+                var genericCastMethod = castMethod.MakeGenericMethod(targetType);
+                return genericCastMethod;
             });
 
-            var typedResults = genericToArrayMethod.Invoke(null, new[] { items });
+            var typedResults = genericCastMethod.Invoke(null, new[] { items });
             return typedResults;
         }
     }
