@@ -10,6 +10,26 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
     public class SerializingWithShould
     {
         [TestMethod]
+        public void SerializeAsArrayGivenNestedListWithMultipleValues()
+        {
+            var list = new NestedValueOrList();
+            list.Items.AddRange(new int[] { 1, 2, 3 });
+            var expected = JsonConvert.SerializeObject(list.Items);
+            var serialized = JsonConvert.SerializeObject(list, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            Assert.AreEqual(expected, serialized);
+        }
+
+        [TestMethod]
+        public void SerializeAsSingleValueGivenNestedListWithSingleValues()
+        {
+            var list = new NestedValueOrList();
+            list.Items.Add(1);
+            var expected = "1";
+            var serialized = JsonConvert.SerializeObject(list, new JsonConverter[] { new SingleOrArrayJsonConverter() });
+            Assert.AreEqual(expected, serialized);
+        }
+
+        [TestMethod]
         public void SerializeAsArrayGivenMultipleValueArray()
         {
             var values = new bool[] { true, false, true };

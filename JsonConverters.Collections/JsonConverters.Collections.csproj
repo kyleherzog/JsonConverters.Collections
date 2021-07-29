@@ -2,9 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <ApplicationVersion>3.1</ApplicationVersion>
+    <ApplicationVersion>3.2</ApplicationVersion>
     <ApplicationRevision>0</ApplicationRevision>
-    <Version>3.1</Version>
+    <Version>3.2</Version>
     <Authors>Kyle Herzog</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kyleherzog/JsonConverters.Collections/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kyleherzog/JsonConverters.Collections</PackageProjectUrl>
