@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,23 @@ namespace JsonConverters.Collections.Extensions
             var isIEnumerable = (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 || type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
             return isIEnumerable;
+        }
+
+        /// <summary>
+        /// Checks to see if a <see cref="Type"/> is an <see cref="IList"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> that is to be inspected.</param>
+        /// <returns>True if the specified <see cref="Type"/> is an <see cref="IList"/>; Otherwise, false.</returns>
+        internal static bool IsIList(this Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            var isIList = (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IList))
+                || type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IList));
+            return isIList;
         }
 
         /// <summary>

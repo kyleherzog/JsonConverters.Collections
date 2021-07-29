@@ -12,7 +12,17 @@ namespace JsonConverters.Collections.UnitTests.SingleOrArrayJsonConverterTests
     public class DeserializingWithShould
     {
         [TestMethod]
-        public void DeserializeInheritedListGivenClassAttributionAndSingleItems()
+        public void DeserializeNestedListGivenClassAttributionAndSingleItem()
+        {
+            var list = new NestedValueOrList();
+            list.Items.Add(1);
+            var serialized = JsonConvert.SerializeObject(list, new SingleOrArrayJsonConverter());
+            var deserialized = JsonConvert.DeserializeObject<NestedValueOrList>(serialized, new SingleOrArrayJsonConverter());
+            deserialized.Should().BeEquivalentTo(list);
+        }
+
+        [TestMethod]
+        public void DeserializeInheritedListGivenClassAttributionAndSingleItem()
         {
             var oddList = new StringOrValueList { "OnlyOne" };
             var serialized = JsonConvert.SerializeObject(oddList);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,8 @@ namespace JsonConverters.Collections
         /// <inheritdoc/>
         public override bool CanWrite => true;
 
+        private static ConcurrentDictionary<Type, MethodInfo> AddMethodCache { get; } = new ConcurrentDictionary<Type, MethodInfo>();
+
         /// <inheritdoc/>
         public override bool CanConvert(Type objectType)
         {
@@ -49,16 +52,16 @@ namespace JsonConverters.Collections
 
             var elementType = objectType.GetEnumerablArgumentType();
 
-            if (objectType.IsArray || objectType.IsInterface)
+            if (objectType.IsIList())
+            {
+                results = (System.Collections.IList)Activator.CreateInstance(objectType);
+            }
+            else
             {
                 var listType = typeof(List<>);
                 var genericListType = listType.MakeGenericType(elementType);
 
                 results = (System.Collections.IList)Activator.CreateInstance(genericListType);
-            }
-            else
-            {
-                results = (System.Collections.IList)Activator.CreateInstance(objectType);
             }
 
             var token = JToken.Load(reader);
@@ -78,31 +81,24 @@ namespace JsonConverters.Collections
                 results.Add(value);
             }
 
-            var argumentType = objectType.GetEnumerablArgumentType();
-            if (argumentType != typeof(object))
+            if (elementType != typeof(object))
             {
-                var typedResults = Cast(results, argumentType);
-                if (objectType.IsArray)
-                {
-                    var typedArray = ToArray(typedResults, argumentType);
-                    return typedArray;
-                }
-                else
-                {
-                    return typedResults;
-                }
+                results = (System.Collections.IList)Cast(results, elementType);
             }
 
             if (objectType.IsArray)
             {
-                var array = Array.CreateInstance(objectType.GetElementType(), results.Count);
+                var array = Array.CreateInstance(elementType, results.Count);
                 results.CopyTo(array, 0);
                 return array;
             }
-            else
+
+            if (!objectType.IsInterface && !objectType.IsIList())
             {
-                return results;
+                return CreatePopulatedResult(objectType, elementType, results);
             }
+
+            return results;
         }
 
         /// <inheritdoc/>
@@ -133,6 +129,23 @@ namespace JsonConverters.Collections
 
             var typedResults = genericCastMethod.Invoke(null, new[] { items });
             return typedResults;
+        }
+
+        private object CreatePopulatedResult(Type objectType, Type elementType, IList items)
+        {
+            var result = Activator.CreateInstance(objectType);
+            var addMethod = AddMethodCache.GetOrAdd(objectType, x => objectType.GetMethod("Add", new Type[] { elementType }));
+            if (addMethod == null)
+            {
+                throw new MissingMethodException($"The 'Add' method could not be found on the type '{objectType.FullName}'.");
+            }
+
+            foreach (var item in items)
+            {
+                addMethod.Invoke(result, new object[] { item });
+            }
+
+            return result;
         }
 
         private object ToArray(object items, Type targetType)

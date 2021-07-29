@@ -7,6 +7,9 @@
 These are the changes to each version that has been released
 on NuGet.org.
 
+## 3.2
+- [x] Added support for objects that don't support IList but have an Add method
+
 ## 3.1
 - [x] Fixed bug with using SingleOrArrayJsonConverter with IEnumberable inherited types
 
